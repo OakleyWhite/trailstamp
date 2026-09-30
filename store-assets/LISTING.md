@@ -9,7 +9,7 @@ If you rename the app, swap the name in the title fields only.
 
 **App name** (30 max)
 ```
-Waypoint: Travel Quests
+Trailstamp: Travel Quests
 ```
 
 **Short description** (80 max)
@@ -19,7 +19,7 @@ Plan trips, snap photo challenges around the world, and fill your passport.
 
 **Full description** (4,000 max)
 ```
-Waypoint turns every trip into an adventure you'll actually remember.
+Trailstamp turns every trip into an adventure you'll actually remember.
 
 PLAN IT
 • Build each day of your trip, stop by stop
@@ -42,7 +42,7 @@ TRAVEL TOGETHER
 
 REMEMBER IT
 • Capture moments with photos and notes, sorted by day
-• Import a past trip straight from your photos: Waypoint reads the dates and places and even spots challenges you already did
+• Import a past trip straight from your photos: Trailstamp reads the dates and places and even spots challenges you already did
 • Make a recap card when the trip ends and share it
 • Collect stamps, badges and pins on your travel map
 • Track all 63 U.S. national parks and a bucket list of adventures like skydiving, scuba diving and ziplining
@@ -53,7 +53,7 @@ Your trips are private to you. Share only what you choose.
 **Category:** Travel & Local
 **Tags:** Trip planner, Travel guide, Photography
 **Contact email:** your support email
-**Privacy policy:** https://oakleywhite.github.io/waypoint-app/privacy.html
+**Privacy policy:** https://oakleywhite.github.io/trailstamp/privacy.html
 
 **Graphics**
 - App icon: `play-icon-512.png`
@@ -66,7 +66,7 @@ Your trips are private to you. Share only what you choose.
 
 **Name** (30 max)
 ```
-Waypoint: Travel Quests
+Trailstamp: Travel Quests
 ```
 
 **Subtitle** (30 max)
@@ -88,8 +88,8 @@ trip,planner,itinerary,scavenger,hunt,national,parks,passport,journal,bucket,lis
 
 **Category:** Travel (secondary: Photo & Video)
 **Age rating:** 12+ (user-generated content, shared photos)
-**Support URL:** https://oakleywhite.github.io/waypoint-app/
-**Privacy policy URL:** https://oakleywhite.github.io/waypoint-app/privacy.html
+**Support URL:** https://oakleywhite.github.io/trailstamp/
+**Privacy policy URL:** https://oakleywhite.github.io/trailstamp/privacy.html
 
 **Screenshots**
 - 6.9" display: `screenshots/iphone-6.9-*.png` (1320 × 2868)
@@ -97,7 +97,7 @@ trip,planner,itinerary,scavenger,hunt,national,parks,passport,journal,bucket,lis
 
 **App Review notes** (paste into the review information box)
 ```
-Waypoint is a native travel app. Features that use the device:
+Trailstamp is a native travel app. Features that use the device:
 - Location: "Near you" on the Quests tab shows photo challenges close to the traveler.
 - Camera and photo library: capture moments and complete challenges; import a past trip from photos (reads photo dates and locations).
 - Share sheet: trip recap cards are saved or shared as images.

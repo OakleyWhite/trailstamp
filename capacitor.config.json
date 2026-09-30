@@ -1,6 +1,6 @@
 {
-  "appId": "com.oakleywhite.waypoint",
-  "appName": "Waypoint",
+  "appId": "com.oakleywhite.trailstamp",
+  "appName": "Trailstamp",
   "webDir": "www",
   "android": { "allowMixedContent": false },
   "server": { "androidScheme": "https" }

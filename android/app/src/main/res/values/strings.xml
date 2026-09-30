@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Waypoint</string>
-    <string name="title_activity_main">Waypoint</string>
-    <string name="package_name">com.oakleywhite.waypoint</string>
-    <string name="custom_url_scheme">com.oakleywhite.waypoint</string>
+    <string name="app_name">Trailstamp</string>
+    <string name="title_activity_main">Trailstamp</string>
+    <string name="package_name">com.oakleywhite.trailstamp</string>
+    <string name="custom_url_scheme">com.oakleywhite.trailstamp</string>
 </resources>

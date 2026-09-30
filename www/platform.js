@@ -1,4 +1,4 @@
-/* Waypoint platform layer.
+/* Trailstamp platform layer.
    The app was first built to run inside Claude, where storage, photos, AI and downloads
    come from `claude.use(...)`. This file provides the same calls backed by Supabase and
    the phone, so the app code runs unchanged in the Android/iOS build. */
@@ -152,7 +152,7 @@
       if (native && Share && Filesystem){
         const b64 = await new Promise(res => { const f = new FileReader(); f.onload = () => res(String(f.result).split(",")[1]); f.readAsDataURL(blob); });
         const w = await Filesystem.writeFile({ path: filename, data: b64, directory: "CACHE" });
-        try { await Share.share({ title: "My Waypoint recap", files: [w.uri] }); } catch(e) { if (!/cancel/i.test(e && e.message || "")) throw e; }
+        try { await Share.share({ title: "My Trailstamp recap", files: [w.uri] }); } catch(e) { if (!/cancel/i.test(e && e.message || "")) throw e; }
         return { status: "delivered" };
       }
       const file = new File([blob], filename, { type: "image/png" });
@@ -181,7 +181,7 @@
         <button class="btn ghost sm" data-acct="signout">Sign out</button>
       </div>
       <button class="linkbtn danger" data-acct="delete">Delete my account</button>
-      <p class="note" style="margin:8px 0 0">Waypoint ${esc(CFG.version || "")}</p></div>`;
+      <p class="note" style="margin:8px 0 0">Trailstamp ${esc(CFG.version || "")}</p></div>`;
   };
   function sheet(inner){ $("#modal").innerHTML = `<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true">${inner}</div></div>`; }
   function close(){ $("#modal").innerHTML = ""; }
@@ -194,7 +194,7 @@
       sheet(`<h2>Report this photo</h2><p class="note" style="margin-top:-8px">Tell us what's wrong. We review every report within 24 hours.</p>
         <div class="field"><label for="rp-why">Reason</label><select id="rp-why"><option>Inappropriate or explicit</option><option>Harassment or hate</option><option>Spam</option><option>Something else</option></select></div>
         <div class="actions"><button class="btn ghost" data-close>Cancel</button><button class="btn ember" id="rp-go">Send report</button></div>`);
-      $("#rp-go").onclick = async () => { $("#rp-go").disabled = true; try { await check(await sb.from("reports").insert({ target_user: who, moment_id: mid, reason: $("#rp-why").value })); close(); toast("Report sent. Thanks for keeping Waypoint safe."); } catch(e){ $("#rp-go").disabled = false; toast("Couldn't send the report. Try again."); } };
+      $("#rp-go").onclick = async () => { $("#rp-go").disabled = true; try { await check(await sb.from("reports").insert({ target_user: who, moment_id: mid, reason: $("#rp-why").value })); close(); toast("Report sent. Thanks for keeping Trailstamp safe."); } catch(e){ $("#rp-go").disabled = false; toast("Couldn't send the report. Try again."); } };
       return;
     }
     if (el.dataset.block){
@@ -227,7 +227,7 @@
           for (let i = 0; i < 50; i++){ const { data } = await sb.storage.from("photos").list(me, { limit: 100 }); if (!data || !data.length) break; await sb.storage.from("photos").remove(data.map(f => me + "/" + f.name)); }
           await check(await sb.rpc("delete_my_account"));
           await sb.auth.signOut(); try { localStorage.clear(); } catch(e) {}
-          document.body.innerHTML = `<main class="wrap"><div class="empty" style="margin-top:20vh"><h3>Your account is deleted</h3><p>All your data has been removed. Thanks for trying Waypoint.</p></div></main>`;
+          document.body.innerHTML = `<main class="wrap"><div class="empty" style="margin-top:20vh"><h3>Your account is deleted</h3><p>All your data has been removed. Thanks for trying Trailstamp.</p></div></main>`;
         } catch(e){ $("#del-go").disabled = false; $("#del-go").textContent = "Delete account"; toast("Couldn't delete the account. Check your connection and try again."); }
       };
     }
@@ -237,7 +237,7 @@
   function authScreen(mode){
     const signup = mode === "signup";
     $("#app").innerHTML = `<div class="authwrap">
-      <div class="hero auth-hero"><span class="scene-auth"></span><span class="shade"></span><span class="hero-in"><span class="hero-title">Waypoint</span><span class="hero-sub">Plan it, play it, remember it.</span></span></div>
+      <div class="hero auth-hero"><span class="scene-auth"></span><span class="shade"></span><span class="hero-in"><span class="hero-title">Trailstamp</span><span class="hero-sub">Plan it, play it, remember it.</span></span></div>
       ${!configured ? `<div class="panel"><h3>Setup needed</h3><p class="note" style="margin:0">Add your Supabase URL and anon key to <b>www/config.js</b>, then rebuild.</p></div>` : `
       <form class="panel" id="authf" novalidate>
         <h3>${signup ? "Create your account" : "Sign in"}</h3>

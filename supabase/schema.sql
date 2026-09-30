@@ -1,4 +1,4 @@
--- Waypoint backend. Run once: Supabase dashboard > SQL Editor > New query > paste > Run.
+-- Trailstamp backend. Run once: Supabase dashboard > SQL Editor > New query > paste > Run.
 -- Every table has row-level security, so the public anon key in the app can only
 -- reach what the signed-in person is allowed to see.
 

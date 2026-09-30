@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 // Release signing comes from environment variables (set by the GitHub build,
 // or by you locally). The keystore file itself is never committed.
-def wpKeystore = System.getenv("WAYPOINT_KEYSTORE")
-def wpVersionCode = (System.getenv("WAYPOINT_VERSION_CODE") ?: "1").toInteger()
+def wpKeystore = System.getenv("TRAILSTAMP_KEYSTORE")
+def wpVersionCode = (System.getenv("TRAILSTAMP_VERSION_CODE") ?: "1").toInteger()
 
 android {
-    namespace = "com.oakleywhite.waypoint"
+    namespace = "com.oakleywhite.trailstamp"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.oakleywhite.waypoint"
+        applicationId "com.oakleywhite.trailstamp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode wpVersionCode
@@ -25,9 +25,9 @@ android {
         release {
             if (wpKeystore) {
                 storeFile file(wpKeystore)
-                storePassword System.getenv("WAYPOINT_KEYSTORE_PASSWORD")
-                keyAlias System.getenv("WAYPOINT_KEY_ALIAS")
-                keyPassword System.getenv("WAYPOINT_KEY_PASSWORD")
+                storePassword System.getenv("TRAILSTAMP_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("TRAILSTAMP_KEY_ALIAS")
+                keyPassword System.getenv("TRAILSTAMP_KEY_PASSWORD")
             }
         }
     }

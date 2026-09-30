@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset Waypoint Password</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset Trailstamp Password</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&family=Figtree:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="site.css"></head>
-<body><main><header><img src="icon.png" alt=""><b>Waypoint</b></header>
+<body><main><header><img src="icon.png" alt=""><b>Trailstamp</b></header>
 <h1>Set a new password</h1>
 <form class="card" id="f"><label for="pw">New password</label><input id="pw" type="password" minlength="8" autocomplete="new-password" required>
 <button id="go">Save password</button><p id="msg" class="muted" role="status"></p></form>
@@ -14,6 +14,6 @@ document.getElementById("f").addEventListener("submit", async e => {
   e.preventDefault(); const pw = document.getElementById("pw").value;
   if (pw.length < 8) return msg("Use at least 8 characters.");
   const { error } = await sb.auth.updateUser({ password: pw });
-  msg(error ? "That link has expired. Request a new one from the app." : "Password saved. Go back to Waypoint and sign in.");
+  msg(error ? "That link has expired. Request a new one from the app." : "Password saved. Go back to Trailstamp and sign in.");
 });
 </script></main></body></html>

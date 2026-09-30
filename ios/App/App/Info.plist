@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Waypoint</string>
+        <string>Trailstamp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -23,7 +23,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Waypoint uses your location to show photo challenges near you.</string>
+	<string>Trailstamp uses your location to show photo challenges near you.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Take a photo to capture a moment or complete a challenge.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

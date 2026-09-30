@@ -203,7 +203,7 @@ function rankCard(){
 
 /* ================= LAYOUT ================= */
 function topbar(){ const pts=score(), r=rankOf(pts);
-  return `<header class="top"><div class="brand">${LOGO}<span>Waypoint</span></div><button class="rankchip" data-tab="passport" aria-label="${r.name}, ${pts} points. Open passport"><span class="lv">${r.i+1}</span>${pts} pts</button></header>`; }
+  return `<header class="top"><div class="brand">${LOGO}<span>Trailstamp</span></div><button class="rankchip" data-tab="passport" aria-label="${r.name}, ${pts} points. Open passport"><span class="lv">${r.i+1}</span>${pts} pts</button></header>`; }
 const phead=(t,s)=>`<div class="phead"><h1>${t}</h1><p>${s}</p></div>`;
 function render(){
   const app=$("#app"), t=trip();
@@ -756,7 +756,7 @@ async function buildRecap(t){
   if(p){ const d=packDone(p); ctx.font=F(600,32); ctx.fillStyle="rgba(244,238,223,.85)"; ctx.fillText(`⚑ ${d} of ${p.items.length} ${p.name} challenges`,64,yb); }
   // wordmark
   ctx.save(); ctx.translate(64,H-112); ctx.scale(2.2,2.2); ctx.fillStyle="#9CC08A"; ctx.fill(new Path2D("M13 2c1.6 1.4 2 2.8 1.4 4.2 2-1 3.4-.6 4 .9-1 1.2-1.1 2.3-.2 3.2 1.8-.2 2.7.8 2.5 2.4-1.5.5-2 1.4-1.3 2.6-1.3 1.3-2.8 1.3-4.3.3.3 1.8-.4 3.1-2.1 3.9-1.7-.8-2.4-2.1-2.1-3.9-1.5 1-3 1-4.3-.3.7-1.2.2-2.1-1.3-2.6-.2-1.6.7-2.6 2.5-2.4.9-.9.8-2-.2-3.2.6-1.5 2-1.9 4-.9C11 4.8 11.4 3.4 13 2z")); ctx.restore();
-  ctx.font=F(800,44); ctx.fillStyle="#F4EEDF"; ctx.fillText("Waypoint",134,H-64);
+  ctx.font=F(800,44); ctx.fillStyle="#F4EEDF"; ctx.fillText("Trailstamp",134,H-64);
   const r=rankOf(score()); ctx.font=F(600,30); ctx.fillStyle="rgba(244,238,223,.7)"; ctx.textAlign="right"; ctx.fillText(`${r.name} · ${score()} pts`,W-64,H-68); ctx.textAlign="left";
   return cv;
 }
@@ -776,7 +776,7 @@ async function openRecap(t){
 }
 async function saveRecap(name){
   if(!dl||!recapBlob) return;
-  try{ await dl.save({filename:(name||"trip").replace(/[^a-z0-9]+/gi,"-").toLowerCase()+"-recap.png",data:recapBlob}); toast("Recap saved"); }
+  try{ await dl.save({filename:(name||"trip").replace(/[^a-z0-9]+/gi,"-").toLowerCase()+"-trailstamp-recap.png",data:recapBlob}); toast("Recap saved"); }
   catch(e){ if(e&&e.code!=="declined") toast("Couldn't save the image. Press and hold it instead."); }
 }
 
@@ -847,7 +847,7 @@ function crewPanel(t){
   return `<div class="panel crew"><h3>Trip crew <span class="note" style="font-weight:600">${mem.length} ${mem.length===1?"person":"people"}</span></h3>
     <div class="chipsrow">${mem.map(id=>`<span class="person ${id===myId?"me":""}">${esc(nameOf(id))}</span>`).join("")}</div>
     <div class="codebox"><div><span class="note">Trip code</span><b id="tcode">${esc(t.group)}</b></div><button class="btn ghost sm" data-copy="${esc(t.group)}">Copy</button></div>
-    <p class="note" style="margin:10px 0 0">Friends open Waypoint, tap <b>Join a friend's trip</b> on the Trips tab, and enter this code.</p></div>`;
+    <p class="note" style="margin:10px 0 0">Friends open Trailstamp, tap <b>Join a friend's trip</b> on the Trips tab, and enter this code.</p></div>`;
 }
 function crewRace(t,p){
   if(!t.group||!groups[t.group]) return "";
@@ -864,7 +864,7 @@ function leaderboardHTML(){
   const others=rows.filter(r=>r.id!==myId).length;
   return `<div class="sechead"><h2>Leaderboard</h2></div><div class="panel">
     ${rows.length?rows.map((r,i)=>`<div class="lrow ${r.id===myId?"me":""}"><span class="lpos">${i+1}</span><div class="lwho"><b>${esc(nameOf(r.id))}</b><span class="note">${esc(RANKS[Math.max(0,Math.min(RANKS.length-1,(r.rank||1)-1))][1])} · ${Number(r.challenges)||0} challenges · ${Number(r.parks)||0} parks</span></div><span class="lpts">${Number(r.pts)||0}</span></div>`).join(""):'<p class="note" style="margin:0">Complete a challenge to get on the board.</p>'}
-    ${others?"":`<p class="note" style="margin:12px 0 0">Invite friends to Waypoint and they show up here once they score points.</p>`}</div>`;
+    ${others?"":`<p class="note" style="margin:12px 0 0">Invite friends to Trailstamp and they show up here once they score points.</p>`}</div>`;
 }
 
 /* ================= NEARBY ================= */
@@ -889,7 +889,7 @@ function locate(btn){
   if(locating) return;
   if(!navigator.geolocation){ toast("Location isn't available on this device."); return; }
   locating=true; btn&&(btn.disabled=true);
-  let done=false; const fail=()=>{ if(done) return; done=true; locating=false; btn&&(btn.disabled=false); toast("Location is off for Waypoint. Turn it on in your phone's Settings to see challenges near you."); };
+  let done=false; const fail=()=>{ if(done) return; done=true; locating=false; btn&&(btn.disabled=false); toast("Location is off for Trailstamp. Turn it on in your phone's Settings to see challenges near you."); };
   setTimeout(fail,8000);
   try{ navigator.geolocation.getCurrentPosition(p=>{ if(done) return; done=true; locating=false; here=[p.coords.latitude,p.coords.longitude]; rerender(); toast("Showing challenges near you"); },fail,{timeout:7000,maximumAge:300000}); }catch(e){ fail(); }
 }
@@ -959,7 +959,7 @@ function nearestPlace(g){
 function openImport(){
   importData=null;
   $("#modal").innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-label="Import a past trip"><h2>Import a past trip</h2>
-    <p class="note" style="margin-top:-8px">Pick the photos from one trip. Waypoint reads when and where each was taken, builds the trip, and sorts them into days.</p>
+    <p class="note" style="margin-top:-8px">Pick the photos from one trip. Trailstamp reads when and where each was taken, builds the trip, and sorts them into days.</p>
     <label class="pick" for="imp-files">${ICON.cam}<span>Choose photos</span></label><input id="imp-files" type="file" accept="image/jpeg,image/*" multiple class="hidden">
     <div id="imp-body"></div>
     <div class="actions"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn ember" id="imp-go" disabled>Import trip</button></div></div></div>`;

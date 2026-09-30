@@ -1,4 +1,4 @@
-// Waypoint AI function: plans days, suggests packing items and makes challenges.
+// Trailstamp AI function: plans days, suggests packing items and makes challenges.
 // The app sends a prompt; this function calls Claude with YOUR API key, which stays
 // on the server. Set it once with:
 //   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return reply(405, { code: "bad_request" });
 
-  // Only signed-in Waypoint users can call this.
+  // Only signed-in Trailstamp users can call this.
   const auth = req.headers.get("Authorization") ?? "";
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
     global: { headers: { Authorization: auth } },

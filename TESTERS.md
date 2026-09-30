@@ -8,10 +8,10 @@
 
 ## Message to send them (text or email)
 
-> Hey! I built a travel app called Waypoint and I need testers on Android for 2 weeks before it can go on the Play Store.
+> Hey! I built a travel app called Trailstamp and I need testers on Android for 2 weeks before it can go on the Play Store.
 >
 > 1. Open this link on your Android phone and tap **Become a tester**: PASTE-YOUR-OPT-IN-LINK
-> 2. Tap the Play Store link on that page and install **Waypoint**.
+> 2. Tap the Play Store link on that page and install **Trailstamp**.
 > 3. Create an account, add a trip (past or upcoming), and try a challenge or two.
 > 4. **Keep it installed for 14 days** and open it every few days. That's what Google checks.
 > 5. Found a bug or have an idea? **Passport > Send feedback** in the app.

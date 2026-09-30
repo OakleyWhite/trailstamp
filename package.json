@@ -1,8 +1,8 @@
 {
-  "name": "waypoint-app",
+  "name": "trailstamp",
   "version": "0.1.0",
   "private": true,
-  "description": "Waypoint travel app (Android and iOS via Capacitor)",
+  "description": "Trailstamp travel app (Android and iOS via Capacitor)",
   "scripts": {
     "sync": "cap sync",
     "android": "cap open android",

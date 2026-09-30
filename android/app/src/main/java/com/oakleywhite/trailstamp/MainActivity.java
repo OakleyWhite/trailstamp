@@ -1,4 +1,4 @@
-package com.oakleywhite.waypoint;
+package com.oakleywhite.trailstamp;
 
 import com.getcapacitor.BridgeActivity;
 
