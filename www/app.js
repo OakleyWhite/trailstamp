@@ -245,6 +245,7 @@ function homePage(){
     </ol>
     <button class="btn wide" data-act="new">${ICON.plus}Plan your first trip</button>
     <div class="row" style="margin-top:10px"><button class="btn ghost sm" data-act="demo" style="flex:1">Try a sample trip</button><button class="btn ghost sm" data-act="capture" style="flex:1">Already traveling? Capture</button></div>
+    <button class="btn ghost sm wide" data-act="import" style="margin-top:10px">${ICON.cam}Import a past trip from your photos</button>
     <button class="btn ghost sm wide" data-act="join" style="margin-top:10px">Join a friend's trip with a code</button>`;
   const act=state.trips.find(isActive), up=upcoming(), feat=act||up[0], rest=up.filter(t=>t!==feat), past=pastTrips();
   let h=topbar();
@@ -254,7 +255,7 @@ function homePage(){
   if(act) h+=nearbyHTML(true);
   h+=`<div class="sechead"><h2>${feat?"Also coming up":"Upcoming"}</h2><button class="btn sm" data-act="new">${ICON.plus}New trip</button></div>`;
   h+=rest.length?rest.map(tripRow).join(""):`<p class="hint">${feat?"Nothing else planned yet.":"No upcoming trips. Start one."}</p>`;
-  h+=`<button class="btn ghost sm wide" data-act="join" style="margin-top:4px">${bIcon("users")}Join a friend's trip with a code</button>`;
+  h+=`<div class="row" style="gap:8px;margin-top:4px"><button class="btn ghost sm" style="flex:1" data-act="join">${bIcon("users")}Join a friend's trip</button><button class="btn ghost sm" style="flex:1" data-act="import">${ICON.cam}Import past trip</button></div>`;
   if(past.length) h+=`<div class="sechead"><h2>Past trips</h2></div>`+past.map(tripRow).join("");
   return h;
 }
@@ -908,6 +909,108 @@ document.addEventListener("click",ev=>{
   else if(a==="unlocate"){ here=null; rerender(); }
 });
 function selectCode(){ const b=$("#tcode"); if(!b) return; const r=document.createRange(); r.selectNodeContents(b); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("Code selected. Copy it from the menu."); }
+
+
+/* ================= IMPORT A PAST TRIP FROM PHOTOS ================= */
+// Reads each photo's date and GPS from its EXIF data, builds a trip from the date range,
+// groups photos taken close together into moments, and spots challenges you already did.
+async function readExif(file){
+  const out={date:null,geo:null};
+  try{
+    const buf=await file.slice(0,262144).arrayBuffer(), v=new DataView(buf);
+    if(v.getUint16(0)!==0xFFD8) return out;
+    let off=2;
+    while(off<v.byteLength-4){
+      const marker=v.getUint16(off), size=v.getUint16(off+2);
+      if(marker===0xFFE1&&v.getUint32(off+4)===0x45786966){ // "Exif"
+        const t=off+10, le=v.getUint16(t)===0x4949;
+        const u16=o=>v.getUint16(t+o,le), u32=o=>v.getUint32(t+o,le);
+        const ifd=(o,cb)=>{ const n=u16(o); for(let i=0;i<n;i++){ const e=o+2+i*12; cb(u16(e),u16(e+2),u32(e+4),t+e+8); } };
+        const ascii=(o,len)=>{ let s=""; for(let i=0;i<len-1;i++) s+=String.fromCharCode(v.getUint8(t+o+i)); return s; };
+        const rat=o=>u32(o)/(u32(o+4)||1);
+        let exifPtr=0,gpsPtr=0,dt0="";
+        ifd(u32(4),(tag,type,cnt,e)=>{ const val=v.getUint32(e,le); if(tag===0x8769) exifPtr=val; if(tag===0x8825) gpsPtr=val; if(tag===0x0132) dt0=ascii(val,cnt); });
+        let dt="";
+        if(exifPtr) ifd(exifPtr,(tag,type,cnt,e)=>{ if(tag===0x9003) dt=ascii(v.getUint32(e,le),cnt); });
+        dt=dt||dt0;
+        const m=/^(\d{4}):(\d\d):(\d\d) (\d\d):(\d\d):(\d\d)/.exec(dt);
+        if(m) out.date=new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
+        if(gpsPtr){ let la,lo,laR="N",loR="E";
+          ifd(gpsPtr,(tag,type,cnt,e)=>{ const p=v.getUint32(e,le);
+            if(tag===1) laR=String.fromCharCode(v.getUint8(e)); if(tag===3) loR=String.fromCharCode(v.getUint8(e));
+            if(tag===2) la=rat(p)+rat(p+8)/60+rat(p+16)/3600; if(tag===4) lo=rat(p)+rat(p+8)/60+rat(p+16)/3600; });
+          if(la!=null&&lo!=null&&(la||lo)) out.geo=[laR==="S"?-la:la,loR==="W"?-lo:lo]; }
+        return out;
+      }
+      if((marker&0xFF00)!==0xFF00||marker===0xFFDA) break;
+      off+=2+size;
+    }
+  }catch(e){}
+  return out;
+}
+let importData=null;
+function nearestPlace(g){
+  if(!g) return null;
+  let best=null;
+  allPacks().forEach(p=>{ const pg=packGeo(p); if(pg){ const d=km(g,pg); if(d<80&&(!best||d<best.d)) best={d,name:p.name.split(" & ")[0],pack:p}; } });
+  Object.entries(NP_GEO).forEach(([n,pg])=>{ const d=km(g,pg); if(d<60&&(!best||d<best.d)) best={d,name:n+" National Park",np:n}; });
+  return best;
+}
+function openImport(){
+  importData=null;
+  $("#modal").innerHTML=`<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-label="Import a past trip"><h2>Import a past trip</h2>
+    <p class="note" style="margin-top:-8px">Pick the photos from one trip. Waypoint reads when and where each was taken, builds the trip, and sorts them into days.</p>
+    <label class="pick" for="imp-files">${ICON.cam}<span>Choose photos</span></label><input id="imp-files" type="file" accept="image/jpeg,image/*" multiple class="hidden">
+    <div id="imp-body"></div>
+    <div class="actions"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn ember" id="imp-go" disabled>Import trip</button></div></div></div>`;
+  $("#imp-files").addEventListener("change",async e=>{
+    const files=[...e.target.files].slice(0,80); if(!files.length) return;
+    $("#imp-body").innerHTML=`<p class="note center" style="padding:14px 0"><span class="spin"></span> Reading ${files.length} photos…</p>`;
+    const items=[]; for(const f of files){ const x=await readExif(f); items.push({f,date:x.date||new Date(f.lastModified||Date.now()),geo:x.geo,exact:!!x.date}); }
+    items.sort((a,b)=>a.date-b.date);
+    const geos=items.filter(i=>i.geo), mid=geos.length?geos[Math.floor(geos.length/2)].geo:null, place=nearestPlace(mid);
+    const found=[]; // challenges visited, from GPS within 400 m
+    allPacks().forEach(p=>p.items.forEach(c=>{ if(state.quests.done[c.id]) return; const g=chGeo(c); if(!g) return; const hit=items.find(i=>i.geo&&km(i.geo,g)<0.4); if(hit&&!found.some(x=>x.c.id===c.id)) found.push({c,p,item:hit}); }));
+    importData={items,mid,found};
+    const s=iso(items[0].date), en=iso(items[items.length-1].date), undated=items.filter(i=>!i.exact).length;
+    $("#imp-body").innerHTML=`<div class="impsum"><b>${items.length} photo${items.length===1?"":"s"}</b><span>${fmtD(s,{month:"short",day:"numeric",year:"numeric"})}${en!==s?" – "+fmtD(en,{month:"short",day:"numeric",year:"numeric"}):""}${geos.length?` · ${geos.length} with location`:""}</span>${undated?`<span class="note">${undated} had no date inside, so their file date was used.</span>`:""}</div>
+      <div class="field"><label for="imp-to">Where did you go?</label><input id="imp-to" value="${esc(place?place.name:"")}" placeholder="City, park or place" required></div>
+      <div class="field"><label for="imp-name">Trip name</label><input id="imp-name" placeholder="${esc(place?place.name+" trip":"Weekend away")}"></div>
+      <div class="grid2"><div class="field"><label for="imp-s">Start</label><input id="imp-s" type="date" value="${s}"></div><div class="field"><label for="imp-e">End</label><input id="imp-e" type="date" value="${en}"></div></div>
+      ${found.length?`<div class="field"><label>Challenges spotted in your photos</label>${found.map((x,i)=>`<label class="check"><input type="checkbox" data-impq="${i}" checked><span class="txt">${esc(x.c.title)} ${ptsTag(x.c.pts)}</span></label>`).join("")}</div>`:""}
+      ${!geos.length?`<p class="note">These photos have no location inside. Many phones remove it when sharing. Type the place above.</p>`:""}`;
+    $("#imp-go").disabled=false;
+  });
+  $("#imp-go").addEventListener("click",runImport);
+}
+async function runImport(){
+  if(!importData) return;
+  const to=$("#imp-to").value.trim(); if(!to){ toast("Add where you went."); $("#imp-to").focus(); return; }
+  const s=$("#imp-s").value, e=$("#imp-e").value||s; if(e<s){ toast("The end date is before the start date."); return; }
+  const btn=$("#imp-go"); btn.disabled=true;
+  const {items,mid,found}=importData, keepQ=found.filter((x,i)=>{ const cb=document.querySelector(`[data-impq="${i}"]`); return !cb||cb.checked; });
+  const t={id:uid(),name:$("#imp-name").value.trim()||to+" trip",from:"",to,start:s,end:e,people:1,budget:0,cur:"USD",days:{},ideas:[],pack:[],exp:[],notes:"",imported:true};
+  if(mid) t.geo=mid;
+  state.trips.push(t);
+  // group photos taken within 90 minutes (and 3 km) of each other into one moment, max 6 photos each
+  const groupsOf=[]; items.forEach(it=>{ const g=groupsOf[groupsOf.length-1]; const last=g&&g[g.length-1];
+    if(g&&g.length<6&&it.date-last.date<90*60000&&(!it.geo||!last.geo||km(it.geo,last.geo)<3)) g.push(it); else groupsOf.push([it]); });
+  const assets=await assetsP; let done=0, failed=0;
+  for(const g of groupsOf){
+    btn.innerHTML=`<span class="spin"></span>Importing ${done+1} of ${groupsOf.length}…`;
+    const where=nearestPlace(g.find(i=>i.geo)&&g.find(i=>i.geo).geo);
+    const q=keepQ.find(x=>g.includes(x.item));
+    const m={id:uid(),at:g[0].date.toISOString(),place:q?placeFrom(q.c.title):(where?where.name:to),note:"",trip:t.id,photos:[],thumbs:[]};
+    for(const it of g){ try{ if(assets){ const b=await shrink(it.f,1600,.82); const r=await assets.upload(b,{type:"image/jpeg"}); m.photos.push(r.id); } else { const b=await shrink(it.f,520,.7); m.thumbs.push(await toDataURL(b)); } }catch(err){ failed++; } }
+    if(!m.thumbs.length) delete m.thumbs;
+    if(q&&photoCount(m)){ m.quest=q.c.id; state.quests.done[q.c.id]={at:iso(g[0].date),moment:m.id}; }
+    moments.push(m); await putMoment(m); done++;
+  }
+  save(); closeModal(); setView({tab:"home",trip:t.id,ttab:"log",pack:null});
+  toast(`Imported ${items.length-failed} photos into ${groupsOf.length} moments${keepQ.length?` · ${keepQ.length} challenge${keepQ.length===1?"":"s"} done`:""}`);
+}
+
+document.addEventListener("click",ev=>{ const el=ev.target.closest('[data-act="import"]'); if(el) openImport(); });
 
 /* ================= EVENTS ================= */
 document.addEventListener("click",ev=>{

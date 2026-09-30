@@ -187,3 +187,16 @@ create policy "photos: read own or shared" on storage.objects for select to auth
 drop policy if exists "photos: delete own" on storage.objects;
 create policy "photos: delete own" on storage.objects for delete to authenticated
   using (bucket_id = 'photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- ---------- crash reports from the app ----------
+create table if not exists public.app_errors (
+  id bigint generated always as identity primary key,
+  user_id uuid default auth.uid() references auth.users on delete set null,
+  message text not null check (char_length(message) <= 1000),
+  stack text check (char_length(stack) <= 4000),
+  app_version text, platform text, user_agent text,
+  created_at timestamptz not null default now()
+);
+alter table public.app_errors enable row level security;
+drop policy if exists "errors: send" on public.app_errors;
+create policy "errors: send" on public.app_errors for insert to authenticated with check (user_id = auth.uid());

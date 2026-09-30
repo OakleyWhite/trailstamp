@@ -6,6 +6,7 @@ window.WAYPOINT_CONFIG = {
   supabaseUrl: "https://YOUR-PROJECT.supabase.co",
   supabaseAnonKey: "YOUR-ANON-KEY",
   privacyUrl: "https://oakleywhite.github.io/waypoint-app/privacy.html",
+  termsUrl: "https://oakleywhite.github.io/waypoint-app/terms.html",
   resetRedirect: "https://oakleywhite.github.io/waypoint-app/reset.html",
   version: "0.1.0 (test)"
 };

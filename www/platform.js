@@ -177,6 +177,7 @@
       <div class="acct-links">
         <button class="btn ghost sm" data-acct="feedback">Send feedback</button>
         ${CFG.privacyUrl ? `<a class="btn ghost sm" href="${esc(CFG.privacyUrl)}" target="_blank" rel="noopener">Privacy policy</a>` : ""}
+        ${CFG.termsUrl ? `<a class="btn ghost sm" href="${esc(CFG.termsUrl)}" target="_blank" rel="noopener">Terms</a>` : ""}
         <button class="btn ghost sm" data-acct="signout">Sign out</button>
       </div>
       <button class="linkbtn danger" data-acct="delete">Delete my account</button>
@@ -245,7 +246,7 @@
         <div class="field"><label for="au-pw">Password</label><input id="au-pw" type="password" autocomplete="${signup ? "new-password" : "current-password"}" minlength="8" required>${signup ? `<span class="note">At least 8 characters.</span>` : ""}</div>
         <button class="btn wide" id="au-go">${signup ? "Create account" : "Sign in"}</button>
         <div class="auth-alt">${signup ? `Already have an account? <button type="button" class="linkbtn" data-auth="signin">Sign in</button>` : `New here? <button type="button" class="linkbtn" data-auth="signup">Create an account</button><br><button type="button" class="linkbtn" data-auth="reset">Forgot password?</button>`}</div>
-        ${signup && CFG.privacyUrl ? `<p class="note center" style="margin:12px 0 0">By creating an account you agree to the <a href="${esc(CFG.privacyUrl)}" target="_blank" rel="noopener">privacy policy</a>.</p>` : ""}
+        ${signup && CFG.privacyUrl ? `<p class="note center" style="margin:12px 0 0">By creating an account you agree to the ${CFG.termsUrl ? `<a href="${esc(CFG.termsUrl)}" target="_blank" rel="noopener">terms</a> and ` : ""}<a href="${esc(CFG.privacyUrl)}" target="_blank" rel="noopener">privacy policy</a>.</p>` : ""}
       </form>`}</div>`;
     $("#tabs").innerHTML = "";
     const f = $("#authf"); if (!f) return;
@@ -281,6 +282,20 @@
     authScreen(m);
   });
   document.addEventListener("click", ev => { const s = ev.target.closest("[data-close]"); if (s && !window.__appLoaded && (ev.target === s || s.tagName === "BUTTON")) close(); });
+
+  /* ---------- crash reporting: errors go to the app_errors table in Supabase ---------- */
+  const sentErr = new Set(); let errCount = 0;
+  function reportError(message, stack){
+    try {
+      if (!sb || !session || errCount >= 15) return;
+      const key = String(message).slice(0, 200); if (sentErr.has(key)) return; sentErr.add(key); errCount++;
+      sb.from("app_errors").insert({ message: String(message).slice(0, 1000), stack: String(stack || "").slice(0, 4000),
+        app_version: CFG.version || "", platform: native ? (window.Capacitor.getPlatform && window.Capacitor.getPlatform()) : "web",
+        user_agent: navigator.userAgent.slice(0, 300) }).then(() => {}, () => {});
+    } catch(e) {}
+  }
+  window.addEventListener("error", e => reportError(e.message || "error", e.error && e.error.stack || (e.filename + ":" + e.lineno)));
+  window.addEventListener("unhandledrejection", e => { const r = e.reason || {}; if (r && r.code && /declined|not_granted|rate_limited|cancel/.test(r.code)) return; reportError(r.message || String(r), r.stack); });
 
   /* ---------- boot ---------- */
   let booted = false;

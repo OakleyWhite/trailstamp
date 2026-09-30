@@ -1,3 +1,5 @@
+@font-face{font-family:"Bricolage Grotesque";src:url("fonts/bricolage.woff2") format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree.woff2") format("woff2");font-weight:300 900;font-display:swap}
 :root{
   --bg:#EFE8D8; --card:#FBF8F1; --ink:#1E261D; --muted:#6A6452; --line:#DCD1B9; --chip:#E7DFCB;
   --forest:#2F4A34; --hero:#22382A; --on-hero:#F4EEDF; --moss:#6E8B57; --ember:#D0702A; --gold:#E2AE45;
@@ -324,3 +326,7 @@ label{display:block;font-size:13px;color:var(--muted);font-weight:700;margin-bot
 .linkbtn.danger{color:var(--ember)}
 .modrow{display:flex;gap:10px;margin-top:2px}
 .modrow .linkbtn{font-size:12px;padding:0}
+.impsum{display:flex;flex-direction:column;gap:2px;background:var(--bg);border-radius:14px;padding:12px 14px;margin:12px 0}
+.impsum b{font-family:"Bricolage Grotesque",sans-serif;font-size:20px}
+.grid2>*{min-width:0}
+input[type=date],input[type=datetime-local]{min-width:0}

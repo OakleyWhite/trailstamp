@@ -50,7 +50,7 @@ The app works without this step. The AI buttons just show an error until it's do
    Add the 3 secrets listed in `keys/README-KEEP-SAFE.txt` (names and values are in that file).
 3. **Settings > Pages**: Source **Deploy from a branch**, Branch **main**, folder **/docs**, **Save**.
    In a minute your pages are live at `https://oakleywhite.github.io/waypoint-app/`.
-4. Replace `SUPPORT_EMAIL` in `docs/privacy.html` and `docs/delete-account.html` with the email testers and Google should contact. Commit and push in GitHub Desktop.
+4. Replace `SUPPORT_EMAIL` in `docs/privacy.html`, `docs/terms.html` and `docs/delete-account.html` with the email testers and Google should contact. Commit and push in GitHub Desktop.
 
 **Build the app file:** repo > **Actions** > **Build Android** > **Run workflow**.
 It takes about 8 minutes. When it's green, open the run and download **waypoint-aab**.
@@ -75,12 +75,35 @@ Every time you change the app: commit, push, run the workflow again. Version num
    - **Ads:** No ads.
    - **Content rating:** fill in the questionnaire. Say yes to "users can interact / share content" (shared trips, leaderboard).
    - **Target audience:** 13 and over (18+ is simplest).
-   - **Data safety:** collected: email address, name, user IDs, photos, other user-generated content (trips, notes), app interactions (challenge progress, leaderboard). Location is used only on the device and isn't sent to the server, so it is not "collected". All data is encrypted in transit. People can request deletion.
+   - **Data safety:** collected: email address, name, user IDs, photos, other user-generated content (trips, notes), app interactions (challenge progress, leaderboard), crash logs and diagnostics. Location is used only on the device and isn't sent to the server, so it is not "collected". All data is encrypted in transit. People can request deletion.
    - **Delete account URL:** `https://oakleywhite.github.io/waypoint-app/delete-account.html`
-   - **Store listing:** icon `store-assets/play-icon-512.png`, feature graphic `store-assets/play-feature-graphic-1024x500.png`, at least 2 phone screenshots (take them on a tester phone once it's installed), short and full description.
+   - **Store listing:** all text is in `store-assets/LISTING.md`. Icon `store-assets/play-icon-512.png`, feature graphic `store-assets/play-feature-graphic-1024x500.png`, screenshots `store-assets/screenshots/play-phone-*.png`.
 6. Send testers the message in `TESTERS.md` with your opt-in link.
 7. After 14 days with 12+ testers: **Dashboard > Apply for production**. Google asks what you tested and what changed; your feedback inbox helps answer that.
 
 ## Where tester feedback shows up
 
-Supabase > **Table Editor > feedback**. Reported photos land in **reports**.
+Supabase > **Table Editor**:
+- **feedback**: messages from Passport > Send feedback
+- **reports**: reported photos (check daily; stores expect action within 24 hours)
+- **app_errors**: crashes and errors from testers' phones, with app version and device type
+
+---
+
+## 4. iPhone (App Store), when you're ready
+
+The iPhone project is already in `ios/` with the icon, launch screen and permission messages set.
+
+1. Enroll at https://developer.apple.com/programs ($99/year).
+2. Install **Xcode** from the Mac App Store.
+3. In Terminal:
+   ```bash
+   cd ~/Documents/GitHub/waypoint-app
+   npm install
+   npx cap sync ios
+   npx cap open ios
+   ```
+4. In Xcode: click **App** in the left sidebar > **Signing & Capabilities** > Team: pick your Apple developer team.
+   Plug in your iPhone, pick it at the top, press **▶** to run it on your phone.
+5. To send it to TestFlight: **Product > Archive** > **Distribute App** > **App Store Connect** > Upload.
+6. In https://appstoreconnect.apple.com create the app (bundle ID `com.oakleywhite.waypoint`), paste the text from `store-assets/LISTING.md`, upload `store-assets/screenshots/iphone-6.9-*` and `iphone-6.5-*`, then submit for review.
