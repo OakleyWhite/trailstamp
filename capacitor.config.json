@@ -1,0 +1,7 @@
+{
+  "appId": "com.oakleywhite.waypoint",
+  "appName": "Waypoint",
+  "webDir": "www",
+  "android": { "allowMixedContent": false },
+  "server": { "androidScheme": "https" }
+}

@@ -1,0 +1,13 @@
+:root{--bg:#EFE8D8;--card:#FBF8F1;--ink:#1E261D;--muted:#6A6452;--forest:#2F4A34;--ember:#D0702A;--line:#DCD1B9}
+@media (prefers-color-scheme: dark){:root{--bg:#12150F;--card:#1C2119;--ink:#EDE7D6;--muted:#A39B85;--forest:#9CC08A;--ember:#E0843C;--line:#30372C;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:720px;margin:0 auto;padding-block:32px 64px;padding-inline:20px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:24px}header img{width:48px;height:48px;border-radius:12px}
+header b{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-size:24px}
+h1{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-size:clamp(30px,6vw,40px);line-height:1.1;margin:0 0 8px;text-wrap:balance}
+h2{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-size:21px;margin:30px 0 6px}
+p,li{max-width:65ch}.muted{color:var(--muted)}a{color:var(--forest)}
+.card{background:var(--card);border-radius:18px;padding:18px 20px;margin:16px 0}
+label{display:block;font-weight:700;font-size:14px;color:var(--muted);margin:12px 0 4px}
+input{width:100%;font:inherit;padding:11px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:12px 20px;background:var(--forest);color:var(--card);margin-top:14px;cursor:pointer}
