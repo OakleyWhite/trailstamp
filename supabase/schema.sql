@@ -72,13 +72,14 @@ create table if not exists public.group_members (
   joined_at timestamptz not null default now(),
   primary key (group_code, user_id)
 );
+create index if not exists group_members_user on public.group_members (user_id);
 alter table public.group_members enable row level security;
 
 create or replace function public.is_member(g text) returns boolean
 language sql security definer stable set search_path = public as $$
   select exists (select 1 from public.group_members where group_code = g and user_id = auth.uid());
 $$;
-revoke all on function public.is_member(text) from public;
+revoke all on function public.is_member(text) from public, anon;
 grant execute on function public.is_member(text) to authenticated;
 
 drop policy if exists "members: read" on public.group_members;
@@ -96,6 +97,7 @@ create table if not exists public.group_moments (
   data jsonb not null
 );
 create index if not exists group_moments_code on public.group_moments (group_code, at desc);
+create index if not exists group_moments_by on public.group_moments (by);
 alter table public.group_moments enable row level security;
 drop policy if exists "gm: read" on public.group_moments;
 create policy "gm: read" on public.group_moments for select to authenticated using (public.is_member(group_code));
@@ -152,12 +154,13 @@ create or replace function public.bump_ai_usage() returns int
 language plpgsql security definer set search_path = public as $$
 declare n int;
 begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
   insert into public.ai_usage (user_id, day, calls) values (auth.uid(), current_date, 1)
   on conflict (user_id, day) do update set calls = public.ai_usage.calls + 1
   returning calls into n;
   return n;
 end $$;
-revoke all on function public.bump_ai_usage() from public;
+revoke all on function public.bump_ai_usage() from public, anon;
 grant execute on function public.bump_ai_usage() to authenticated;
 
 -- ---------- delete my account (Google Play and Apple require this in the app) ----------
@@ -166,9 +169,10 @@ grant execute on function public.bump_ai_usage() to authenticated;
 create or replace function public.delete_my_account() returns void
 language plpgsql security definer set search_path = public as $$
 begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
   delete from auth.users where id = auth.uid();
 end $$;
-revoke all on function public.delete_my_account() from public;
+revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
 
 -- ---------- photo storage ----------
@@ -182,7 +186,7 @@ drop policy if exists "photos: read own or shared" on storage.objects;
 create policy "photos: read own or shared" on storage.objects for select to authenticated
   using (bucket_id = 'photos' and (
     (storage.foldername(name))[1] = auth.uid()::text
-    or exists (select 1 from public.group_moments gm where gm.data -> 'photos' ? name and public.is_member(gm.group_code))
+    or exists (select 1 from public.group_moments gm where gm.data -> 'photos' ? storage.objects.name and public.is_member(gm.group_code))
   ));
 drop policy if exists "photos: delete own" on storage.objects;
 create policy "photos: delete own" on storage.objects for delete to authenticated

@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script>
 // Same two values as www/config.js in the app.
-const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co", SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+const SUPABASE_URL = "https://fjrcyfuiyilbjdxcwcag.supabase.co", SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqcmN5ZnVpeWlsYmpkeGN3Y2FnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NjE3NjgsImV4cCI6MjEwNjUzNzc2OH0.iftT9eh41XK9HL4tdqt1YueOl3hXu3gCX1xy3Gdhu-g";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const msg = t => document.getElementById("msg").textContent = t;
 document.getElementById("f").addEventListener("submit", async e => {
