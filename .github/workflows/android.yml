@@ -12,14 +12,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
@@ -47,7 +47,22 @@ jobs:
           TRAILSTAMP_VERSION_CODE: ${{ github.run_number }}
         run: |
           chmod +x gradlew
-          ./gradlew bundleRelease --no-daemon
+          # Check the key first so a wrong secret gives a clear message.
+          if ! keytool -list -keystore app/upload.jks -storepass "$TRAILSTAMP_KEYSTORE_PASSWORD" -alias "$TRAILSTAMP_KEY_ALIAS" > /tmp/key.txt 2>&1; then
+            echo "::error::Signing key check failed: $(tr '\n' ' ' < /tmp/key.txt | cut -c1-300). Check the TRAILSTAMP_KEYSTORE_PASSWORD and TRAILSTAMP_KEY_ALIAS secrets."
+            exit 1
+          fi
+          set +e
+          ./gradlew bundleRelease --no-daemon > /tmp/gradle.log 2>&1
+          code=$?
+          set -e
+          tail -n 200 /tmp/gradle.log
+          if [ $code -ne 0 ]; then
+            msg=$(sed -n '/What went wrong/,/Try:/p' /tmp/gradle.log | head -n 25 | tr '\n' ' ' | cut -c1-1500)
+            echo "::error::Gradle: ${msg:-see log}"
+            grep -E "^e: |error:|ERROR" /tmp/gradle.log | head -n 8 | while read -r l; do echo "::error::$l"; done
+            exit $code
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
