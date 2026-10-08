@@ -50,7 +50,7 @@ The app works without this step. The AI buttons just show an error until it's do
    Add the 3 secrets listed in `keys/README-KEEP-SAFE.txt` (names and values are in that file).
 3. **Settings > Pages**: Source **Deploy from a branch**, Branch **main**, folder **/docs**, **Save**.
    In a minute your pages are live at `https://oakleywhite.github.io/trailstamp/`.
-4. Replace `SUPPORT_EMAIL` in `docs/privacy.html`, `docs/terms.html` and `docs/delete-account.html` with the email testers and Google should contact. Commit and push in GitHub Desktop.
+4. Replace `oneforoakley@icloud.com` in `docs/privacy.html`, `docs/terms.html` and `docs/delete-account.html` with the email testers and Google should contact. Commit and push in GitHub Desktop.
 
 **Build the app file:** repo > **Actions** > **Build Android** > **Run workflow**.
 It takes about 8 minutes. When it's green, open the run and download **trailstamp-aab**.
